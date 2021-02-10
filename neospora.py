@@ -13,7 +13,17 @@ print(neospora.groupby('NEOSPORA').size())
 
 
 # 2. Creacion de filtros, graficos y analisis de datos en crudo
-sb.catplot(x='RAZA',data=neospora,kind="count")
+# sb.catplot(x='RAZA', data=neospora, kind="count")
+# sb.catplot(x='EDAD', data=neospora, kind="count")
+# sb.catplot(x='NEOSPORA', data=neospora, kind="count")
+# sb.catplot(x='TORO', data=neospora, kind="count")
+# sb.catplot(x='INSEMINACION', data=neospora, kind="count")
+# sb.catplot(x='ABORTO', data=neospora, kind="count")
+# sb.catplot(x='REPETICION', data=neospora, kind="count")
+# sb.catplot(x='NO_CARGA', data=neospora, kind="count")
+# sb.catplot(x='DISTOCIAS', data=neospora, kind="count")
+# sb.catplot(x='TERNEROS_DEBILES', data=neospora, kind="count")
+# sb.catplot(x='MUERTE_EMBRIONARIA', data=neospora, kind="count")
 grp = neospora[['RAZA', 'NEOSPORA']].groupby(['RAZA'], as_index=True).agg(['mean', 'count'])
 print(grp)
 
@@ -126,7 +136,7 @@ with open(r"tree.dot", 'w') as f:
                               class_names = ['No', 'N1 Neospora'],
                               rounded = True,
                               filled= True )
-print('Almacenamiento de datos resutantes completado')
+print('Almacenamiento de datos resultantes completado')
 
 
 # 8. Generacion de arbol de decision comprensible por el ser humano
