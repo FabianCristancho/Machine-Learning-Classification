@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Feb  9 21:25:47 2021
+Creación de archivos para representar los datos del archivo excel en gráficas estadísticas
 
-@author: asusu
+@author: Grupo Árboles de decisión
 """
 import pandas as pd # Analisis y manipulación de datos
 

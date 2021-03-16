@@ -1,10 +1,20 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Mar 16 17:46:45 2021
+
+@author: asusu
+"""
+
 import pandas as pd # Analisis y manipulacion de datos
 
 import pydot # Creacion de archivo descriptivo en texto plano (DOT)
 
 from sklearn import tree # Aprendizaje automatico
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 
+import matplotlib.pyplot as plt
+import numpy as np
 
 # 1. Obtener datos y almacenarlos en un dataframe
 neospora = pd.read_excel('Neospora.xlsx', 'Hoja1')
@@ -18,9 +28,9 @@ print(grp)
 
 # 3. Mapear datos del dataframe para categorizarlos
 # Mapping de la edad
-neospora['cat_edad'] = neospora['EDAD'].map({'> 2 A�OS': 1,
-                                            '> 3 A�OS': 2,
-                                            '> 4 A�O': 3}).astype(int)
+neospora['cat_edad'] = neospora['EDAD'].map({'> 2 AÑOS': 1,
+                                            '> 3 AÑOS': 2,
+                                            '> 4 AÑO': 3}).astype(int)
 
 # Mapping de la raza
 neospora['cat_raza'] = neospora['RAZA'].map({'AYR': 1,
@@ -32,7 +42,7 @@ neospora['cat_raza'] = neospora['RAZA'].map({'AYR': 1,
 neospora['cat_toro'] = neospora['TORO'].map({False: 0,
                                               True: 1}).astype(int)
 
-# Mapping de inseminación
+# Mapping de inseminaciÃ³n
 neospora['cat_inseminacion'] = neospora['INSEMINACION'].map({False: 0,
                                               True: 1}).astype(int)
 
@@ -102,32 +112,60 @@ print('Entrenamiento finalizado')
 
 
 # 6. Aplicacion del algoritmo de arbol de clasificacion por entropia
-y_train = neospora_mapping['NEOSPORA']
-x_train = neospora_mapping.drop(['NEOSPORA'], axis=1).values
+X = neospora_mapping.drop(['NEOSPORA'], axis=1).values
+y = neospora_mapping['NEOSPORA']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
+
+
+# y_train = neospora_mapping['NEOSPORA']
+# x_train = neospora_mapping.drop(['NEOSPORA'], axis=1).values
 
 decision_tree = tree.DecisionTreeClassifier(criterion='entropy',
                                             min_samples_split=10,
                                             min_samples_leaf=2,
                                             max_depth=11,
                                             class_weight={True:1.2})
-decision_tree.fit(x_train, y_train)
+decision_tree.fit(X_train, y_train)
 print('Arbol de decision implementado')
 
 
-# 7. Almacenamiento de los resultados obtenidos a traves de un archivo .dot
-with open(r"tree.dot", 'w') as f:
-    f = tree.export_graphviz(decision_tree,
-                              out_file=f,
-                              max_depth = 11,
-                              impurity = True,
-                              feature_names = list(neospora_mapping.drop(['NEOSPORA'], axis=1)),
-                              class_names = ['No', 'N1 Neospora'],
-                              rounded = True,
-                              filled= True )
-print('Almacenamiento de datos resultantes completado')
+print('Result')
+y_pred = decision_tree.predict(X_test)
+print(y_pred)
+
+cm = confusion_matrix(y_test, y_pred)
+print(cm)
+print(classification_report(y_test, y_pred))
+
+cm = confusion_matrix(y_test, y_pred)
+print('Matriz de confusión: \ n ' , cm)
+
+fig, ax = plt.subplots(figsize=(10,5))
+ax.matshow(cm)
+plt.title('Matriz de confusion', fontsize=20)
+plt.ylabel('Etiqueta Predicha', fontsize=15)
+plt.xlabel('Etiqueta Verdadera', fontsize=15)
+
+for(i, j), z in np.ndenumerate(cm):
+    ax.text(j, i, '{:0.1f}'.format(z), ha='center', va='center')
 
 
-# 8. Generacion de arbol de decision comprensible por el ser humano
-(graph,) = pydot.graph_from_dot_file('tree.dot')
-graph.write_png('graphic_tree.png')
-print('Grafico terminado')
+# y_pred = decision_tree.predict(y_train)
+# print(neospora['NEOSPORA'])
+# y_test = neospora['NEOSPORA'].map({False: 0,
+#                                               True: 1}).astype(int)
+
+# print('-----------------------')
+# print(y_test)
+
+# new_neospora_predict = neospora.drop(drop_elements, axis=1)
+# print(new_neospora_predict['NEOSPORA'])
+# predict_test = new_neospora_predict.drop('NEOSPORA', 1).values
+
+
+# print('Obteniendo y_predict')
+# y_pred = decision_tree.predict(x_train)
+# print(y_pred)
+
+
